@@ -41,12 +41,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         TextView tv = findViewById(R.id.tv1);
-//        try {
-//            getBalanceUsingExtensionkitSDK(tv);
-//        } catch (SsdkUnsupportedException e) {
-//            e.printStackTrace();
-//        }
-        getFromAddressUsingWeb3J(tv);
+        try {
+            getBalanceUsingExtensionkitSDK(tv);
+        } catch (SsdkUnsupportedException e) {
+            e.printStackTrace();
+        }
+        //getFromAddressUsingWeb3J(tv);
     }
 
     private void getBalanceUsingExtensionkitSDK(TextView tv) throws SsdkUnsupportedException {
@@ -62,11 +62,11 @@ public class MainActivity extends AppCompatActivity {
             public void onSuccess(BigInteger bigInteger) {
                 Log.d(LOG_TAG,"balance: success");
                 runOnUiThread(new Runnable() {
-                                  @Override
-                                  public void run() {
-                                      tv.setText(bigInteger.toString());
-                                  }
-                              }
+                      @Override
+                      public void run() {
+                          tv.setText(bigInteger.toString());
+                      }
+                  }
                 );
             }
 
@@ -74,6 +74,13 @@ public class MainActivity extends AppCompatActivity {
             public void onFailure(@NonNull ExecutionException e) {
                 Log.e(LOG_TAG,"balance: fail");
                 Log.e(LOG_TAG, e.toString());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        tv.setText(e.toString());
+                    }
+                });
+
             }
 
             @Override
