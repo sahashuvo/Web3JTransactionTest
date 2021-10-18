@@ -24,6 +24,8 @@ import com.samsung.android.sdk.blockchain.wallet.HardwareWalletType;
 
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.Web3jService;
+import org.web3j.protocol.core.DefaultBlockParameter;
+import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.http.HttpService;
 
 import java.math.BigInteger;
@@ -39,11 +41,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         TextView tv = findViewById(R.id.tv1);
-        try {
-            getBalanceUsingExtensionkitSDK(tv);
-        } catch (SsdkUnsupportedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            getBalanceUsingExtensionkitSDK(tv);
+//        } catch (SsdkUnsupportedException e) {
+//            e.printStackTrace();
+//        }
+        getFromAddressUsingWeb3J(tv);
     }
 
     private void getBalanceUsingExtensionkitSDK(TextView tv) throws SsdkUnsupportedException {
@@ -81,15 +84,17 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void getFromAddressUsingWeb3J(TextView tv){
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
         Web3j web3j = Web3j.build(new HttpService("https://ropsten.infura.io/v3/71cf9f88c5b54962a394d80890e41d5b"));
         try{
-            String from = web3j.ethGetTransactionByHash("0x91502b175eb3e4b9267e46ff15b36b5342b9cf0709292286a07fb10bba11f7c4").send().getTransaction().get().getFrom();
-            tv.setText(from);
-            Log.d("AAA","From: "+from);
+            BigInteger balance = web3j.ethGetBalance("0xE8Ac2B52BB224CA9c83E558e30F9A61E001d8AAC", DefaultBlockParameterName.LATEST).
+                    sendAsync().get().getBalance();
+            tv.setText(balance.toString());
+            Log.d("AAA","Balance using web3j directly: "+balance.toString());
         }catch (Exception e){
             tv.setText(e.toString());
             Log.e("AAA",e.toString());
